@@ -1,2 +1,2 @@
 # oasas-admissions
-A simple analytics project examining 2007 OASAS admissions using R.
+A simple analytics project examining OASAS admissions from 2007-2017 using R.
