@@ -1,5 +1,5 @@
 ---
-title: "2007-2017 OASAS Admissions Analytics"
+title: "OASAS Admissions Visualizations"
 output:
   pdf_document: default
 ---
@@ -14,7 +14,7 @@ library(paletteer)
 library(MetBrewer)
 ```
 
-```{r}
+```{r, include=FALSE}
 # Documentation from data.world recommends package installation from GitHub
 devtools::install_github("datadotworld/data.world-r", build_vignettes = TRUE)
 
@@ -29,19 +29,13 @@ admissions_df <- data.world::query(
   sql_stmt, "https://data.world/data-ny-gov/ngbt-9rwf")
 ```
 
----
 
-## Data Understanding
-
-* Initial look at dataframe, check data types
-
-```{r}
+```{r, include=FALSE}
 str(admissions_df)
 ```
 
-* Admissions trends grouped by each variable
 
-```{r}
+```{r, echo=FALSE}
 ggplot(admissions_df, aes(x = admissions)) +
   geom_histogram() + 
   labs(title = "Distribution of \"Admission\" Observations",
@@ -53,7 +47,9 @@ ggplot(admissions_df, aes(x = admissions)) +
   theme(
     plot.title = element_text(face = "bold", size = 14, hjust = 0.5, margin = margin(t = 5))
   )
+```
 
+```{r, include=FALSE}
 program_category_summary <- admissions_df %>% 
   group_by(program_category) %>%
   summarize(
@@ -95,9 +91,8 @@ primary_substance_group_summary <- admissions_df %>%
 print(primary_substance_group_summary)
 ```
 
-* Factoring variables and checking for outliers
 
-```{r}
+```{r, include=FALSE}
 admissions_df <- admissions_df %>% 
   mutate(
     program_category = as.factor(program_category),
@@ -134,21 +129,14 @@ str(admissions_df)
 str(rmv_admissions_outliers$admissions)
 ```
 
-* It may not be significant that admissions numbers are higher than usual at any given point in time
 
----
-
-## Data Preparation
-
-* Data is structured relationally prior to analysis
-
-```{r}
+```{r, include=FALSE}
 # External county code .csv from https://www.dot.ny.gov
 county_codes <- read_csv("county_codes.csv") 
 county_codes
 ```
 
-```{r}
+```{r, include=FALSE}
 county <- admissions_df %>%
   select(county_of_program_location) %>%
   distinct() %>%
@@ -170,7 +158,7 @@ county <- admissions_df %>%
 county
 ```
 
-```{r}
+```{r, include=FALSE}
 # Define abbreviations
 program_category_index <- c(
   "Crisis" = "C",
@@ -196,9 +184,8 @@ program_category <- admissions_df %>%
 program_category
 ```
 
-* program_category contains identifiers assigned to each program category, duplicates
 
-```{r}
+```{r, include=FALSE}
 # Define index
 primary_substance_group_index <- c(
   "Alcohol" = "A",
@@ -227,7 +214,7 @@ primary_substance_group <- admissions_df %>%
 primary_substance_group
 ```
 
-```{r}
+```{r, include=FALSE}
 # Join county_code by county name
 admissions_df <- admissions_df %>% 
   full_join(county, by = "county_of_program_location")
@@ -247,7 +234,7 @@ admissions_df <- admissions_df %>%
 str(admissions_df)
 ```
 
-```{r}
+```{r, echo=FALSE}
 # aggregate() to sum the total admissions for every year
 annual_admissions <- function() {
   # Store aggregated data in separate tibble
@@ -285,17 +272,8 @@ annual_admissions <- function() {
 annual_admissions()
 ```
 
-* Admissions peak in 2009 with 311,722 patients
-* A significant downward trend is observed from 2010 to 2013
-* Admissions continue to gradually decline from 2013 onward
 
----
-
-## Data Evaluation
-
-### Admissions by County
-
-```{r}
+```{r, include=FALSE}
 # Total number of admission in NYS
 total_admissions = sum(admissions_df$admissions)
 
@@ -314,9 +292,8 @@ top_admissions <- admissions_by_county %>%
 top_admissions
 ```
 
-### Rehab Facility Identification
 
-```{r}
+```{r, include=FALSE}
 rehab_df <- admissions_df %>%
   # Only show rehabilitation services
   filter(str_detect(service_type, regex("Rehab|Rehabilitation",ignore_case = TRUE))) %>%
@@ -338,14 +315,9 @@ top_substance_df <- rehab_df %>%
 top_substance_df
 ```
 
-* To identify the most prominent substance used in each age group, we first define a regular expression in a new dataframe that filters all services containing "Rehab" or "Rehabilitation" in the name
-* top_substance_df is created to find the top substance per age group
-  * The data is grouped by age_group and primary_substance_group because we are only
-  interested in analyses in the context of these variables paired together
 
-### Admissions by Substance and Age Group
 
-```{r}
+```{r, include=FALSE}
 all_substance_df <- rehab_df %>%
   group_by(service_type, age_group, primary_substance_group) %>%
   # Take count to show how many admissions exist for each substance in each age group
@@ -359,13 +331,9 @@ all_substance_df <- rehab_df %>%
 all_substance_df
 ```
 
----
-\pagebreak
-## Data Visualization
+## Top Admissions by County
 
-### Top Admissions by County
-
-```{r}
+```{r, echo=FALSE}
 ggplot(top_admissions, aes(reorder(county_code, -percentage), percentage)) +
   geom_col(fill = "darkgray") + 
   labs(x = "County",
@@ -388,9 +356,9 @@ ggplot(top_admissions, aes(reorder(county_code, -percentage), percentage)) +
   )
 ```
 
-### Substance Use by Age Group
 
-```{r}
+
+```{r, echo=FALSE}
 ggplot(all_substance_df, aes(age_group, substance_count,
                              fill = primary_substance_group)) +
   geom_bar(stat = "identity") +
@@ -435,9 +403,9 @@ ggplot(all_substance_df, aes(age_group, substance_count,
   )
 ```
 
-### Service Use by Age Group
 
-```{r}
+
+```{r, echo=FALSE}
 ggplot(all_substance_df, aes(age_group, substance_count, fill = service_type)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(expand = c(0, 0)) +
@@ -484,9 +452,8 @@ ggplot(all_substance_df, aes(age_group, substance_count, fill = service_type)) +
   )
 ```
 
-### Top Substance Use by Age Group
 
-```{r}
+```{r, echo=FALSE}
 ggplot(top_substance_df, aes(primary_substance_group, substance_count,
                              fill = age_group)) +
   geom_bar(stat = "identity", position = "dodge") +
