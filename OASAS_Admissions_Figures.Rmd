@@ -359,7 +359,11 @@ ggplot(top_admissions, aes(reorder(county_code, -percentage), percentage)) +
 
 
 ```{r, echo=FALSE}
-ggplot(all_substance_df, aes(age_group, substance_count,
+ggplot(all_substance_df, aes(factor(age_group, 
+                                    levels = c("Under 18", "18 thru 24",
+                                               "25 thru 34", "35 thru 44",
+                                               "45 thru 54", "55 and Older")), 
+                             substance_count,
                              fill = primary_substance_group)) +
   geom_bar(stat = "identity") +
   labs(
@@ -380,12 +384,12 @@ ggplot(all_substance_df, aes(age_group, substance_count,
   ) +
   scale_x_discrete(
     labels = c(
+      "Under 18" = "<18",
       "18 thru 24" = "18-24",
       "25 thru 34" = "25-34",
       "35 thru 44" = "35-44",
       "45 thru 54" = "45-54",
-      "55 and Older" = "55+",
-      "Under 18" = "Under 18"
+      "55 and Older" = "55+"
     )
   ) +
   theme_classic() +
@@ -406,7 +410,11 @@ ggplot(all_substance_df, aes(age_group, substance_count,
 
 
 ```{r, echo=FALSE}
-ggplot(all_substance_df, aes(age_group, substance_count, fill = service_type)) +
+ggplot(all_substance_df, aes(factor(age_group, levels = c("Under 18", "18 thru 24",
+                                                          "25 thru 34", "35 thru 44",
+                                                          "45 thru 54", "55 and Older")),
+                             substance_count,
+                             fill = service_type)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(expand = c(0, 0)) +
   labs(
@@ -415,7 +423,7 @@ ggplot(all_substance_df, aes(age_group, substance_count, fill = service_type)) +
     title = "Service Use by Age Group",
     caption = "Stacked bar showing service use by age group from 2007-2017."
   ) +
-  scale_fill_paletteer_d("MetBrewer::Cassatt2", 
+  scale_fill_paletteer_d("palettetown::seedot", 
     name = "Service Type",
     labels = c(
       "Inpatient Rehabilitation" = "Inpatient",
@@ -434,7 +442,7 @@ ggplot(all_substance_df, aes(age_group, substance_count, fill = service_type)) +
       "35 thru 44" = "35-44",
       "45 thru 54" = "45-54",
       "55 and Older" = "55+",
-      "Under 18" = "Under 18"
+      "Under 18" = "<18"
     )
   ) +
   theme_classic() +
