@@ -1,5 +1,6 @@
 ---
 title: "2007-2017 OASAS Admissions Analytics"
+author: "caitl-k"
 output:
   pdf_document: default
 ---
@@ -9,7 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(devtools)
-library("data.world")
 library(paletteer)
 library(MetBrewer)
 ```
@@ -369,8 +369,9 @@ all_substance_df
 ggplot(top_admissions, aes(reorder(county_code, -percentage), percentage)) +
   geom_col(fill = "darkgray") + 
   labs(x = "County",
-       y= "Percentage (%)",
-       title = "Top OASAS Admissions by County") + 
+       y = "Percentage (%)",
+       title = "Top OASAS Admissions by County",
+       caption = "Figure 1: Percentage breakdown of admissions by county.") + 
   scale_y_continuous(expand = c(0,0)) +
   scale_x_discrete(labels = c("NYC" = "New York City",
                               "QU-NYC" = "Queens",
@@ -379,12 +380,14 @@ ggplot(top_admissions, aes(reorder(county_code, -percentage), percentage)) +
                               "SU" = "Suffolk")) +
   theme_classic() +
   theme(
-    plot.title = element_text(size = 14, face = "bold", hjust = 0.5,
-                              margin = margin(t = 5, b = 10)),
-    axis.title.x = element_text(size = 12, color = "black",
-                                margin = margin(t = 10, b = 5)),
-    axis.title.y = element_text(size = 12, color = "black",
-                                margin = margin(r = 10, l = 5))
+    axis.text = element_text(color = "black"),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.title.x = element_text(color = "black", margin = margin(t = 10)),
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, face = "bold", margin = margin(b = 10)),
+    plot.margin = margin(t = 20, r = 20, l = 20, b = 10),
+    plot.caption.position = "plot",
+    plot.caption = element_text(face = "italic", hjust = 0.5, margin = margin(t = 10))
   )
 ```
 
@@ -402,7 +405,7 @@ ggplot(all_substance_df, aes(factor(age_group,
     x = "Age Group",
     y = "Number of Admissions",
     title = "Substance Use by Age Group",
-    caption = "Stacked bar showing substance use by age group from 2007-2017.",
+    caption = "Figure 2: Stacked bar showing substance use by age group from 2007-2017.",
     legend = "Substance"
   ) +
   scale_y_continuous(expand = c(0,0)) +
@@ -426,25 +429,24 @@ ggplot(all_substance_df, aes(factor(age_group,
   ) +
   theme_classic() +
   theme(
-    axis.title.x = element_text(size = 12, color = "black",
-                                margin = margin(t = 10, b = 5)),
-    axis.title.y = element_text(size = 12, color = "black",
-                                margin = margin(r = 10, l = 10)),
     axis.text = element_text(color = "black"),
-    legend.title = element_text(size = 12, color = "black", hjust = 0.5),
-    plot.title = element_text(size = 14, face = "bold",
-                              margin = margin(b = 10, t = 10), hjust = 0.5),
-    plot.caption = element_text(size = 11, hjust = 0.5,
-                                margin = margin(b = 5, t = 5))
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.title.x = element_text(color = "black", margin = margin(t = 10)),
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.8, face = "bold", margin = margin(b = 10)),
+    plot.margin = margin(t = 20, r = 20, l = 20, b = 10),
+    plot.caption.position = "plot",
+    plot.caption = element_text(face = "italic", hjust = 0.5, margin = margin(t = 10))
   )
 ```
 
 ### Service Use by Age Group
 
 ```{r}
-ggplot(all_substance_df, aes(factor(age_group, levels = c("Under 18", "18 thru 24",
-                                                          "25 thru 34", "35 thru 44",
-                                                          "45 thru 54", "55 and Older")),
+ggplot(all_substance_df, aes(factor(age_group,
+                                    levels = c("Under 18", "18 thru 24",
+                                               "25 thru 34", "35 thru 44",
+                                               "45 thru 54", "55 and Older")),
                              substance_count,
                              fill = service_type)) +
   geom_bar(stat = "identity") +
@@ -453,7 +455,7 @@ ggplot(all_substance_df, aes(factor(age_group, levels = c("Under 18", "18 thru 2
     x = "Age Group",
     y = "Number of Admissions",
     title = "Service Use by Age Group",
-    caption = "Stacked bar showing service use by age group from 2007-2017."
+    caption = "Figure 3: Stacked bar showing service use by age group from 2007-2017."
   ) +
   scale_fill_paletteer_d("palettetown::seedot", 
     name = "Service Type",
@@ -479,16 +481,14 @@ ggplot(all_substance_df, aes(factor(age_group, levels = c("Under 18", "18 thru 2
   ) +
   theme_classic() +
   theme(
-    axis.title.x = element_text(size = 12, color = "black",
-                                margin = margin(t = 10, b = 5)),
-    axis.title.y = element_text(size = 12, color = "black",
-                                margin = margin(r = 10, l = 10)),
     axis.text = element_text(color = "black"),
-    legend.title = element_text(size = 12, color = "black", hjust = 0.5),
-    plot.title = element_text(size = 14, face = "bold",
-                              margin = margin(b = 10, t = 10), hjust = 0.5),
-    plot.caption = element_text(size = 11, hjust = 0.5,
-                                margin = margin(b = 5, t = 5))
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.title.x = element_text(color = "black", margin = margin(t = 10)),
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.8, face = "bold", margin = margin(b = 10)),
+    plot.margin = margin(t = 20, r = 20, l = 20, b = 10),
+    plot.caption.position = "plot",
+    plot.caption = element_text(face = "italic", hjust = 0.5, margin = margin(t = 10))
   )
 ```
 
@@ -502,7 +502,7 @@ ggplot(top_substance_df, aes(primary_substance_group, substance_count,
   labs(
     y = "Number of Admissions",
     title = "Top Substance by Age Group",
-    caption = "Stacked bar showing the top substance used per age group from 2007-2017."
+    caption = "Figure 4: Stacked bar showing the top substance used per age group from 2007-2017."
   ) +
   scale_x_discrete(
     name = "Substance",
@@ -525,15 +525,13 @@ ggplot(top_substance_df, aes(primary_substance_group, substance_count,
   ) +
   theme_classic() +
   theme(
-    axis.title.x = element_text(size = 12, color = "black",
-                                margin = margin(t = 10, b = 5)),
-    axis.title.y = element_text(size = 12, color = "black",
-                                margin = margin(r = 10, l = 10)),
     axis.text = element_text(color = "black"),
-    legend.title = element_text(size = 12, color = "black", hjust = 0.5),
-    plot.title = element_text(size = 14, face = "bold",
-                              margin = margin(b = 10, t = 10), hjust = 0.5),
-    plot.caption = element_text(size = 11, hjust = 0.5,
-                                margin = margin(b = 5, t = 5))
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.title.x = element_text(color = "black"),
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.6, face = "bold", margin = margin(b = 10)),
+    plot.margin = margin(t = 20, r = 20, l = 20, b = 10),
+    plot.caption.position = "plot",
+    plot.caption = element_text(face = "italic", hjust = 0.5, margin = margin(t = 10))
   )
 ```
